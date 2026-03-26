@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ian's Site</title>
+  <style>
+    :root[data-theme="dark"] {
+      --bg: #0f1117;
+      --surface: #1a1d27;
+      --border: #2a2d3a;
+      --text: #e2e8f0;
+      --muted: #8892a4;
+      --accent: #7c9ef8;
+      --toggle-bg: #2a2d3a;
+    }
+
+    :root[data-theme="light"] {
+      --bg: #f8f9fb;
+      --surface: #ffffff;
+      --border: #e2e6ed;
+      --text: #1a1d27;
+      --muted: #64748b;
+      --accent: #3b6ef0;
+      --toggle-bg: #e2e6ed;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.6;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      display: flex;
+      justify-content: flex-end;
+      padding: 1rem 2rem;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      z-index: 10;
+      transition: background 0.2s, border-color 0.2s;
+    }
+
+    .toggle {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--toggle-bg);
+      border: none;
+      border-radius: 2rem;
+      padding: 0.35rem 0.75rem;
+      cursor: pointer;
+      color: var(--muted);
+      font-size: 0.85rem;
+      transition: background 0.2s;
+    }
+
+    .toggle:hover {
+      background: var(--border);
+    }
+
+    .toggle-icon {
+      font-size: 1rem;
+    }
+
+    main {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 4rem 2rem 6rem;
+    }
+
+    .hero {
+      margin-bottom: 4rem;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 1rem;
+    }
+
+    .blurb {
+      font-size: 1.1rem;
+      color: var(--muted);
+      max-width: 520px;
+    }
+
+    .section-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 1.25rem;
+    }
+
+    .articles {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      overflow: hidden;
+      background: var(--border);
+    }
+
+    .article {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      padding: 1.25rem 1.4rem;
+      background: var(--surface);
+      transition: background 0.15s;
+    }
+
+    .article:hover {
+      background: var(--toggle-bg);
+    }
+
+    .article-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      width: 100%;
+      gap: 1rem;
+    }
+
+    .article-title {
+      font-size: 1rem;
+      font-weight: 500;
+    }
+
+    .article-date {
+      font-size: 0.8rem;
+      color: var(--muted);
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .article-summary {
+      font-size: 0.9rem;
+      color: var(--muted);
+      line-height: 1.65;
+    }
+
+    .article-image {
+      display: block;
+      width: calc(100% + 2.8rem);
+      margin: -1.25rem -1.4rem 1.1rem;
+      height: 220px;
+      object-fit: cover;
+    }
+
+    .article-placeholder {
+      opacity: 0.6;
+    }
+
+    .article-placeholder .article-summary {
+      font-style: italic;
+    }
+
+    .empty {
+      padding: 2rem 1.4rem;
+      background: var(--surface);
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <button class="toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">
+    <span class="toggle-icon" id="toggle-icon">☀️</span>
+    <span id="toggle-label">Light</span>
+  </button>
+</header>
+
+<main>
+  <section class="hero">
+    <h1>Things Maui County Council Does</h1>
+    <p class="blurb">
+      They're talking often and also doing things sometimes.
+    </p>
+  </section>
+
+  <section>
+    <p class="section-label">Meeting Summaries</p>
+    <div class="articles">
+      <div class="article article-placeholder">
+        <div class="article-meta">
+          <span class="article-title">Maui County Council — Mar 20, 2026</span>
+          <span class="article-date">Mar 2026</span>
+        </div>
+        <p class="article-summary">
+          Minutes have not yet been published. A summary will be added here as soon as the official minutes are released.
+        </p>
+      </div>
+      <div class="article article-placeholder">
+        <div class="article-meta">
+          <span class="article-title">Maui County Council — Mar 6, 2026</span>
+          <span class="article-date">Mar 2026</span>
+        </div>
+        <p class="article-summary">
+          Minutes have not yet been published. A summary will be added here as soon as the official minutes are released.
+        </p>
+      </div>
+      <div class="article">
+        <img class="article-image" src="https://upload.wikimedia.org/wikipedia/commons/a/ae/Maui-Lahaina-Courthouse-front.JPG" alt="Lāhainā Courthouse, a historic landmark in the district protected by the new height limit ordinance">
+        <div class="article-meta">
+          <span class="article-title">Maui County Council — Feb 18, 2026</span>
+          <span class="article-date">Feb 2026</span>
+        </div>
+        <p class="article-summary">
+          The council confirmed 23 board and commission appointments and passed Bill 183 (6-1-2), amending the West Maui Community Plan to set a 30-foot height limit for the Lāhainā Historic Landmark District — a key post-fire rebuilding guardrail. Other highlights: $10M approved to integrate the Department of Water Supply's water systems, $3M for IT and cybersecurity upgrades, and the county accepted a donation of four Compact Rapid Deployable cell towers for fire and public safety use. Bill 17, repealing social host liability provisions, also passed its final reading.
+        </p>
+      </div>
+      <div class="article">
+        <img class="article-image" src="https://upload.wikimedia.org/wikipedia/commons/b/b3/2023_Maui_fires_-_Lahaina_damage_via_Coast_Guard_2.jpg" alt="Aerial view of Lāhainā fire damage, U.S. Coast Guard photo">
+        <div class="article-meta">
+          <span class="article-title">Maui County Council — Feb 6, 2026</span>
+          <span class="article-date">Feb 2026</span>
+        </div>
+        <p class="article-summary">
+          The council opened by honoring Kamehameha Schools Maui football's second consecutive state championship. Bill 15, allowing factory-built housing in the Lāhainā burn zone, passed its final reading with an amendment requiring that the factories themselves be Hawaii-based. A $10M budget amendment for the Kula Agriculture Park and $886K in opioid settlement funds were approved. Affordable housing also featured heavily: Kehalani Apartments received exemptions enabling a May 2026 construction start, and Hale Pilina's grant funding was redistributed to keep that project on track. Bill 2 (Board of Ethics salary reform) and Bill 17 (social host liability repeal) each had their first readings.
+        </p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+  function toggleTheme() {
+    const html = document.documentElement;
+    const isDark = html.getAttribute("data-theme") === "dark";
+    html.setAttribute("data-theme", isDark ? "light" : "dark");
+    document.getElementById("toggle-icon").textContent = isDark ? "🌙" : "☀️";
+    document.getElementById("toggle-label").textContent = isDark ? "Dark" : "Light";
+    localStorage.setItem("theme", isDark ? "light" : "dark");
+  }
+
+  // Restore saved preference
+  const saved = localStorage.getItem("theme");
+  if (saved) {
+    document.documentElement.setAttribute("data-theme", saved);
+    if (saved === "light") {
+      document.getElementById("toggle-icon").textContent = "🌙";
+      document.getElementById("toggle-label").textContent = "Dark";
+    }
+  }
+</script>
+
+</body>
+</html>
