@@ -146,7 +146,7 @@
 
     h1 {
       font-family: "Oswald", sans-serif;
-      font-size: 5rem;
+      font-size: 4.25rem;
       font-weight: 400;
       letter-spacing: 0.02em;
       text-transform: uppercase;
@@ -163,6 +163,9 @@
     @media (max-width: 860px) {
       .content-layout { grid-template-columns: 1fr; }
       h1 { font-size: 3.5rem; }
+      .article-meta { flex-direction: column; align-items: flex-start; gap: 0.3rem; }
+      .article-actions { flex-wrap: wrap; gap: 0.6rem; }
+      .article-date { white-space: normal; }
     }
 
     /* ── Section label ── */
@@ -718,6 +721,30 @@
     }
     .article-read-more:hover { color: var(--accent); opacity: 1; }
 
+    /* Back to top */
+    #back-to-top {
+      position: fixed;
+      bottom: 1.75rem;
+      right: 1.75rem;
+      width: 2.2rem;
+      height: 2.2rem;
+      border-radius: 50%;
+      background: var(--toggle-bg);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s, background 0.2s;
+      z-index: 50;
+    }
+    #back-to-top.visible { opacity: 1; pointer-events: auto; }
+    #back-to-top:hover { background: var(--border); color: var(--text); }
+
     /* Article actions row (links inside article-meta) */
     .article-actions {
       display: flex;
@@ -956,136 +983,6 @@
     <!-- ── Sidebar ── -->
     <aside class="sidebar">
 
-      <!-- In The News -->
-      <div class="sidebar-section">
-        <p class="section-label">In The News</p>
-        <div class="news-list" id="news-list">
-          <div class="news-item" style="color:var(--muted);font-size:0.82rem;">Loading…</div>
-        </div>
-        <p class="news-footer">
-          <a href="https://www.civilbeat.org/category/maui/" target="_blank" rel="noopener">Civil Beat</a> ·
-          <a href="https://mauinow.com/" target="_blank" rel="noopener">Maui Now</a>
-        </p>
-      </div>
-
-      <!-- Quasi-Judicial Calendar -->
-      <div class="sidebar-section">
-        <p class="section-label">Quasi-Judicial Calendar</p>
-        <div class="qj-list" id="qj-list">
-          <div class="qj-item"><span class="qj-meta">Loading upcoming hearings…</span></div>
-        </div>
-        <p class="news-footer"><a href="https://www.mauicounty.gov/AgendaCenter" target="_blank" rel="noopener">Full agenda center →</a></p>
-      </div>
-
-      <!-- State Legislature Watch -->
-      <div class="sidebar-section">
-        <p class="section-label">State Legislature Watch</p>
-        <div class="bills-list">
-
-          <div class="legis-item">
-            <div class="legis-header">
-              <span class="legis-number">HB2236 / SB2151</span>
-              <span class="legis-status status-risk">High Risk</span>
-            </div>
-            <div class="legis-title">Emergency management powers expansion — codifies governor/county authority to quarantine, enter private property, suspend laws, and seize infrastructure during declared disasters.</div>
-            <div class="legis-note">Broad delegation of emergency authority raises due process and takings concerns. Monitor for amendments limiting scope or adding judicial review requirements before enactment.</div>
-            <div class="legis-updated">In committee · 2026 session</div>
-          </div>
-
-          <div class="legis-item">
-            <div class="legis-header">
-              <span class="legis-number">SB2337</span>
-              <span class="legis-status status-enacted">Enacted</span>
-            </div>
-            <div class="legis-title">Expands county authority to exercise HHFDC powers for mixed-use housing development.</div>
-            <div class="legis-note">Broadens county financing tools for affordable housing. Review whether new authority requires MCC amendments or new procurement rules before use.</div>
-            <div class="legis-updated">Enacted · 2026 session</div>
-          </div>
-
-          <div class="legis-item">
-            <div class="legis-header">
-              <span class="legis-number">HB2090</span>
-              <span class="legis-status status-enacted">Enacted</span>
-            </div>
-            <div class="legis-title">Requires counties to adopt ordinances allowing adaptive reuse of commercial buildings for residential use (above ground floor).</div>
-            <div class="legis-note">Effective 1/1/2026 — Maui County must adopt conforming ordinances. Confirm timeline and whether failure to act creates any legal exposure or preemption issues.</div>
-            <div class="legis-updated">Effective Jan 1, 2026</div>
-          </div>
-
-          <div class="legis-item">
-            <div class="legis-header">
-              <span class="legis-number">Land Use Bills</span>
-              <span class="legis-status status-monitor">Monitor</span>
-            </div>
-            <div class="legis-title">Multiple 2026 bills would shift land use district boundary authority to counties and expand agricultural worker housing exemptions.</div>
-            <div class="legis-note">If enacted, would expand county land use jurisdiction — assess consistency with current General Plan and community plan processes.</div>
-            <div class="legis-updated">In committee · 2026 session</div>
-          </div>
-
-        </div>
-        <p class="news-footer"><a href="https://www.capitol.hawaii.gov/" target="_blank" rel="noopener">Hawaii Legislature →</a></p>
-      </div>
-
-      <!-- Recent Appellate Decisions -->
-      <div class="sidebar-section">
-        <p class="section-label">Recent Appellate Decisions</p>
-        <div class="opinion-list">
-
-          <div class="opinion-item">
-            <div class="opinion-case">Deutsche Bank Nat'l Trust Co. Americas v. Ru</div>
-            <div class="opinion-meta">Hawaii Supreme Court · Mar 24, 2026 · SCWC-23-0000662</div>
-            <div class="opinion-note">Certiorari accepted — foreclosure/mortgage dispute. Watch for decision; Hawaii foreclosure procedure affects county tax sale and lien priority issues.</div>
-          </div>
-
-          <div class="opinion-item">
-            <div class="opinion-case">In re: Tax Appeal of Vreugdenhil &amp; Nakayama</div>
-            <div class="opinion-meta">ICA · Mar 25, 2026 · CAAP-25-0000524</div>
-            <div class="opinion-note">Tax Appeal Court affirmed. Property tax valuation appeals remain active litigation vector for Maui County; track methodology rulings.</div>
-          </div>
-
-        </div>
-        <p class="news-footer section-updated">Updated by scheduled task · <a href="https://www.courts.state.hi.us/opinions_and_orders/opinions" target="_blank" rel="noopener">All opinions →</a></p>
-      </div>
-
-      <!-- Budget Snapshot -->
-      <div class="sidebar-section">
-        <p class="section-label">Budget Snapshot</p>
-        <div class="budget-snapshot">
-          <div class="budget-hero">
-            <span class="budget-hero-number">$1.62B</span>
-            <span class="budget-fy">FY2027 Proposed</span>
-          </div>
-          <div class="budget-lines">
-            <div class="budget-line">
-              <span class="budget-line-label">Affordable Housing</span>
-              <span class="budget-line-value">$79.5M</span>
-            </div>
-            <div class="budget-line">
-              <span class="budget-line-label">Water Systems</span>
-              <span class="budget-line-value">$44.5M</span>
-            </div>
-            <div class="budget-line">
-              <span class="budget-line-label">Capital Improvements</span>
-              <span class="budget-line-value">$698.2M</span>
-            </div>
-            <div class="budget-line">
-              <span class="budget-line-label">Outstanding General Debt</span>
-              <span class="budget-line-value">$336.2M</span>
-            </div>
-            <div class="budget-line">
-              <span class="budget-line-label">Debt Service (% of ops)</span>
-              <span class="budget-line-value">6.2% <span style="font-size:0.68rem;color:var(--muted)">cap 10%</span></span>
-            </div>
-            <div class="budget-line">
-              <span class="budget-line-label">CDBG-DR Recovery Funds</span>
-              <span class="budget-line-value">$1.6B</span>
-            </div>
-          </div>
-          <p class="budget-note">FY2027 proposed up ~4% from FY2026's $1.56B. Debt at 3.3% of taxable assessed value (legal limit 15%). Council vote pending.</p>
-          <a class="upcoming-link" href="https://www.mauicounty.gov/budget" target="_blank" rel="noopener">Full budget documents →</a>
-        </div>
-      </div>
-
       <!-- County Bills Tracker -->
       <div class="sidebar-section">
         <p class="section-label">County Bills Tracker</p>
@@ -1137,6 +1034,136 @@
           </div>
 
         </div>
+      </div>
+
+      <!-- State Legislature Watch -->
+      <div class="sidebar-section">
+        <p class="section-label">State Legislature Watch</p>
+        <div class="bills-list">
+
+          <div class="legis-item">
+            <div class="legis-header">
+              <span class="legis-number">HB2236 / SB2151</span>
+              <span class="legis-status status-risk">High Risk</span>
+            </div>
+            <div class="legis-title">Emergency management powers expansion — codifies governor/county authority to quarantine, enter private property, suspend laws, and seize infrastructure during declared disasters.</div>
+            <div class="legis-note">Broad delegation of emergency authority raises due process and takings concerns. Monitor for amendments limiting scope or adding judicial review requirements before enactment.</div>
+            <div class="legis-updated">In committee · 2026 session</div>
+          </div>
+
+          <div class="legis-item">
+            <div class="legis-header">
+              <span class="legis-number">SB2337</span>
+              <span class="legis-status status-enacted">Enacted</span>
+            </div>
+            <div class="legis-title">Expands county authority to exercise HHFDC powers for mixed-use housing development.</div>
+            <div class="legis-note">Broadens county financing tools for affordable housing. Review whether new authority requires MCC amendments or new procurement rules before use.</div>
+            <div class="legis-updated">Enacted · 2026 session</div>
+          </div>
+
+          <div class="legis-item">
+            <div class="legis-header">
+              <span class="legis-number">HB2090</span>
+              <span class="legis-status status-enacted">Enacted</span>
+            </div>
+            <div class="legis-title">Requires counties to adopt ordinances allowing adaptive reuse of commercial buildings for residential use (above ground floor).</div>
+            <div class="legis-note">Effective 1/1/2026 — Maui County must adopt conforming ordinances. Confirm timeline and whether failure to act creates any legal exposure or preemption issues.</div>
+            <div class="legis-updated">Effective Jan 1, 2026</div>
+          </div>
+
+          <div class="legis-item">
+            <div class="legis-header">
+              <span class="legis-number">Land Use Bills</span>
+              <span class="legis-status status-monitor">Monitor</span>
+            </div>
+            <div class="legis-title">Multiple 2026 bills would shift land use district boundary authority to counties and expand agricultural worker housing exemptions.</div>
+            <div class="legis-note">If enacted, would expand county land use jurisdiction — assess consistency with current General Plan and community plan processes.</div>
+            <div class="legis-updated">In committee · 2026 session</div>
+          </div>
+
+        </div>
+        <p class="news-footer"><a href="https://www.capitol.hawaii.gov/" target="_blank" rel="noopener">Hawaii Legislature →</a></p>
+      </div>
+
+      <!-- Budget Snapshot -->
+      <div class="sidebar-section">
+        <p class="section-label">Budget Snapshot</p>
+        <div class="budget-snapshot">
+          <div class="budget-hero">
+            <span class="budget-hero-number">$1.62B</span>
+            <span class="budget-fy">FY2027 Proposed</span>
+          </div>
+          <div class="budget-lines">
+            <div class="budget-line">
+              <span class="budget-line-label">Affordable Housing</span>
+              <span class="budget-line-value">$79.5M</span>
+            </div>
+            <div class="budget-line">
+              <span class="budget-line-label">Water Systems</span>
+              <span class="budget-line-value">$44.5M</span>
+            </div>
+            <div class="budget-line">
+              <span class="budget-line-label">Capital Improvements</span>
+              <span class="budget-line-value">$698.2M</span>
+            </div>
+            <div class="budget-line">
+              <span class="budget-line-label">Outstanding General Debt</span>
+              <span class="budget-line-value">$336.2M</span>
+            </div>
+            <div class="budget-line">
+              <span class="budget-line-label">Debt Service (% of ops)</span>
+              <span class="budget-line-value">6.2% <span style="font-size:0.68rem;color:var(--muted)">cap 10%</span></span>
+            </div>
+            <div class="budget-line">
+              <span class="budget-line-label">CDBG-DR Recovery Funds</span>
+              <span class="budget-line-value">$1.6B</span>
+            </div>
+          </div>
+          <p class="budget-note">FY2027 proposed up ~4% from FY2026's $1.56B. Debt at 3.3% of taxable assessed value (legal limit 15%). Council vote pending.</p>
+          <a class="upcoming-link" href="https://www.mauicounty.gov/budget" target="_blank" rel="noopener">Full budget documents →</a>
+        </div>
+      </div>
+
+      <!-- Quasi-Judicial Calendar -->
+      <div class="sidebar-section">
+        <p class="section-label">Quasi-Judicial Calendar</p>
+        <div class="qj-list" id="qj-list">
+          <div class="qj-item"><span class="qj-meta">Loading upcoming hearings…</span></div>
+        </div>
+        <p class="news-footer"><a href="https://www.mauicounty.gov/AgendaCenter" target="_blank" rel="noopener">Full agenda center →</a></p>
+      </div>
+
+      <!-- Recent Appellate Decisions -->
+      <div class="sidebar-section">
+        <p class="section-label">Recent Appellate Decisions</p>
+        <div class="opinion-list">
+
+          <div class="opinion-item">
+            <div class="opinion-case">Deutsche Bank Nat'l Trust Co. Americas v. Ru</div>
+            <div class="opinion-meta">Hawaii Supreme Court · Mar 24, 2026 · SCWC-23-0000662</div>
+            <div class="opinion-note">Certiorari accepted — foreclosure/mortgage dispute. Watch for decision; Hawaii foreclosure procedure affects county tax sale and lien priority issues.</div>
+          </div>
+
+          <div class="opinion-item">
+            <div class="opinion-case">In re: Tax Appeal of Vreugdenhil &amp; Nakayama</div>
+            <div class="opinion-meta">ICA · Mar 25, 2026 · CAAP-25-0000524</div>
+            <div class="opinion-note">Tax Appeal Court affirmed. Property tax valuation appeals remain active litigation vector for Maui County; track methodology rulings.</div>
+          </div>
+
+        </div>
+        <p class="news-footer section-updated">Updated by scheduled task · <a href="https://www.courts.state.hi.us/opinions_and_orders/opinions" target="_blank" rel="noopener">All opinions →</a></p>
+      </div>
+
+      <!-- In The News -->
+      <div class="sidebar-section">
+        <p class="section-label">In The News</p>
+        <div class="news-list" id="news-list">
+          <div class="news-item" style="color:var(--muted);font-size:0.82rem;">Loading…</div>
+        </div>
+        <p class="news-footer">
+          <a href="https://www.civilbeat.org/category/maui/" target="_blank" rel="noopener">Civil Beat</a> ·
+          <a href="https://mauinow.com/" target="_blank" rel="noopener">Maui Now</a>
+        </p>
       </div>
 
     </aside><!-- /sidebar -->
@@ -1362,5 +1389,11 @@
   loadNews();
 </script>
 
+  <button id="back-to-top" aria-label="Back to top" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+  <script>
+    window.addEventListener('scroll', () => {
+      document.getElementById('back-to-top').classList.toggle('visible', window.scrollY > 300);
+    }, { passive: true });
+  </script>
 </body>
 </html>
