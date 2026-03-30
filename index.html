@@ -721,6 +721,94 @@
     }
     .article-read-more:hover { color: var(--accent); opacity: 1; }
 
+    /* ── Progress bar ── */
+    #progress-bar {
+      position: fixed; top: 0; left: 0; height: 2px; width: 0%;
+      background: var(--accent); z-index: 9998;
+      transition: width 0.1s linear;
+      pointer-events: none;
+    }
+
+    /* ── Noise texture overlay ── */
+    body::after {
+      content: '';
+      position: fixed; inset: 0;
+      pointer-events: none;
+      opacity: 0.028;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 180px 180px;
+      z-index: 0;
+    }
+
+    /* ── Fade-in on scroll ── */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(14px);
+      transition: opacity 0.45s ease, transform 0.45s ease;
+    }
+    .fade-in.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ── Article chapter numbers ── */
+    .articles { counter-reset: article-counter; }
+    .article { counter-increment: article-counter; }
+    .article::before {
+      content: counter(article-counter, decimal-leading-zero);
+      font-size: 0.62rem;
+      font-family: "Oswald", sans-serif;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      opacity: 0.45;
+      align-self: flex-start;
+      margin-bottom: -0.25rem;
+    }
+
+    /* ── Accent left borders on flagged items ── */
+    .legal-watch  { border-left: 3px solid var(--flag-text); }
+    .coming-up    { border-left: 3px solid var(--coming-text); }
+    .legis-item   { border-left: 3px solid transparent; }
+    .legis-item:has(.status-risk)    { border-left-color: #e05555; }
+    .legis-item:has(.status-watch)   { border-left-color: #f0a832; }
+    .legis-item:has(.status-enacted) { border-left-color: #3bc87a; }
+    .legis-item:has(.status-monitor) { border-left-color: var(--accent); }
+
+    /* ── Skeleton shimmer ── */
+    .skeleton {
+      border-radius: 0.3rem;
+      height: 0.7rem;
+      background: linear-gradient(90deg, var(--surface) 25%, var(--toggle-bg) 50%, var(--surface) 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.6s infinite;
+    }
+    .skeleton + .skeleton { margin-top: 0.5rem; }
+    .skeleton.wide  { width: 85%; }
+    .skeleton.short { width: 50%; }
+    @keyframes shimmer {
+      0%   { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    /* ── Language crossfade ── */
+    [data-en], [data-pidgin], [data-olelo] {
+      transition: opacity 0.18s ease;
+    }
+    .lang-switching [data-en],
+    .lang-switching [data-pidgin],
+    .lang-switching [data-olelo] {
+      opacity: 0;
+    }
+
+    /* ── Last updated ── */
+    .last-updated {
+      font-size: 0.68rem;
+      color: var(--muted);
+      opacity: 0.55;
+      margin-top: 0.5rem;
+      letter-spacing: 0.04em;
+    }
+
     /* Back to top */
     #back-to-top {
       position: fixed;
@@ -826,6 +914,8 @@
 <body>
 
 <!-- Password gate -->
+<div id="progress-bar"></div>
+
 <div id="pw-gate">
   <form id="pw-form" onsubmit="checkPassword(event)">
     <label id="pw-label" for="pw-input">Enter password</label>
@@ -875,6 +965,7 @@
   <section class="hero">
     <h1 data-en="Everyday I'm Council'n" data-pidgin="Everyday I'm Council'n" data-olelo="I Kēlā Me Kēia Lā, Council'n">Everyday I'm Council'n</h1>
     <p class="blurb" data-en="Maui County Council meeting summaries — focused on key votes, legal and administrative implications, and items worth keeping an eye on." data-pidgin="Meeting summaries from da Maui County Council — wat wen happen, wat fo watch out for, and wat stay coming up." data-olelo="Nā hōʻuluʻulu halawai no ke Kūkaʻi Kaunti o Maui — me ka nānā ʻana i nā koho nui, nā hopena, a me nā mea e nānā ai.">Maui County Council meeting summaries — focused on key votes, legal and administrative implications, and items worth keeping an eye on.</p>
+    <p class="last-updated" id="last-updated"></p>
   </section>
 
   <!-- Two-column layout -->
@@ -907,7 +998,7 @@
         </div>
 
         <!-- March 6, 2026 -->
-        <div class="article">
+        <div class="article fade-in">
           <div class="article-meta">
             <span class="article-title" data-en="Regular Council Meeting — March 6, 2026" data-pidgin="Da Council — March 6, 2026" data-olelo="Ke Kūkaʻi Kaunti — Malaki 6, 2026">Regular Council Meeting — March 6, 2026</span>
             <div class="article-actions">
@@ -934,7 +1025,7 @@
         </div>
 
         <!-- February 18, 2026 -->
-        <div class="article">
+        <div class="article fade-in">
           <div class="article-meta">
             <span class="article-title" data-en="Regular Council Meeting — February 18, 2026" data-pidgin="Da Council — February 18, 2026" data-olelo="Ke Kūkaʻi Kaunti — Pepeluali 18, 2026">Regular Council Meeting — February 18, 2026</span>
             <div class="article-actions">
@@ -956,7 +1047,7 @@
         </div>
 
         <!-- February 6, 2026 -->
-        <div class="article">
+        <div class="article fade-in">
           <div class="article-meta">
             <span class="article-title" data-en="Regular Council Meeting — February 6, 2026" data-pidgin="Da Council — February 6, 2026" data-olelo="Ke Kūkaʻi Kaunti — Pepeluali 6, 2026">Regular Council Meeting — February 6, 2026</span>
             <div class="article-actions">
@@ -984,7 +1075,7 @@
     <aside class="sidebar">
 
       <!-- County Bills Tracker -->
-      <div class="sidebar-section">
+      <div class="sidebar-section fade-in">
         <p class="section-label">County Bills Tracker</p>
         <div class="bills-list">
 
@@ -1037,7 +1128,7 @@
       </div>
 
       <!-- State Legislature Watch -->
-      <div class="sidebar-section">
+      <div class="sidebar-section fade-in">
         <p class="section-label">State Legislature Watch</p>
         <div class="bills-list">
 
@@ -1086,7 +1177,7 @@
       </div>
 
       <!-- Budget Snapshot -->
-      <div class="sidebar-section">
+      <div class="sidebar-section fade-in">
         <p class="section-label">Budget Snapshot</p>
         <div class="budget-snapshot">
           <div class="budget-hero">
@@ -1125,16 +1216,16 @@
       </div>
 
       <!-- Quasi-Judicial Calendar -->
-      <div class="sidebar-section">
+      <div class="sidebar-section fade-in">
         <p class="section-label">Quasi-Judicial Calendar</p>
         <div class="qj-list" id="qj-list">
-          <div class="qj-item"><span class="qj-meta">Loading upcoming hearings…</span></div>
+          <div class="qj-item"><div class="skeleton wide"></div><div class="skeleton short"></div></div>
         </div>
         <p class="news-footer"><a href="https://www.mauicounty.gov/AgendaCenter" target="_blank" rel="noopener">Full agenda center →</a></p>
       </div>
 
       <!-- Recent Appellate Decisions -->
-      <div class="sidebar-section">
+      <div class="sidebar-section fade-in">
         <p class="section-label">Recent Appellate Decisions</p>
         <div class="opinion-list">
 
@@ -1155,10 +1246,12 @@
       </div>
 
       <!-- In The News -->
-      <div class="sidebar-section">
+      <div class="sidebar-section fade-in">
         <p class="section-label">In The News</p>
         <div class="news-list" id="news-list">
-          <div class="news-item" style="color:var(--muted);font-size:0.82rem;">Loading…</div>
+          <div class="news-item"><div class="skeleton wide"></div><div class="skeleton short"></div></div>
+          <div class="news-item"><div class="skeleton wide"></div><div class="skeleton short"></div></div>
+          <div class="news-item"><div class="skeleton wide"></div><div class="skeleton short"></div></div>
         </div>
         <p class="news-footer">
           <a href="https://www.civilbeat.org/category/maui/" target="_blank" rel="noopener">Civil Beat</a> ·
@@ -1391,9 +1484,40 @@
 
   <button id="back-to-top" aria-label="Back to top" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
   <script>
+    // ── Progress bar + back-to-top ───────────────────────────────────────
+    const progressBar = document.getElementById('progress-bar');
     window.addEventListener('scroll', () => {
+      const pct = window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100;
+      progressBar.style.width = Math.min(pct, 100) + '%';
       document.getElementById('back-to-top').classList.toggle('visible', window.scrollY > 300);
     }, { passive: true });
+
+    // ── Fade-in on scroll ────────────────────────────────────────────────
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
+    }, { threshold: 0.08 });
+    document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+    // ── Last updated ─────────────────────────────────────────────────────
+    const lu = document.getElementById('last-updated');
+    if (lu) lu.textContent = 'Updated ' + new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+
+    // ── Language crossfade ───────────────────────────────────────────────
+    const _origSetLang = setLang;
+    function setLang(lang) {
+      document.body.classList.add('lang-switching');
+      setTimeout(() => {
+        _origSetLang(lang);
+        document.body.classList.remove('lang-switching');
+      }, 180);
+    }
+
+    // ── Keyboard shortcuts ───────────────────────────────────────────────
+    document.addEventListener('keydown', (e) => {
+      if (document.activeElement.tagName === 'INPUT') return;
+      if (e.key === 't' || e.key === 'T') window.scrollTo({ top: 0, behavior: 'smooth' });
+      if (e.key === 'd' || e.key === 'D') toggleTheme();
+    });
   </script>
 </body>
 </html>
