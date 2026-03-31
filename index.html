@@ -1441,27 +1441,47 @@
   async function loadNews() {
     const feeds = [
       { url: "https://www.civilbeat.org/category/maui/feed/", source: "Civil Beat" },
+      { url: "https://www.civilbeat.org/feed/",               source: "Civil Beat", filterMaui: true },
       { url: "https://mauinow.com/feed/",                     source: "Maui Now"   },
     ];
     const proxy  = "https://api.rss2json.com/v1/api.json?rss_url=";
-    const cutoff = Date.now() - 48 * 60 * 60 * 1000;
+    const cutoff = Date.now() - 96 * 60 * 60 * 1000; // 4 days to catch slower CB updates
     const skipRe = /\b(football|basketball|baseball|softball|soccer|volleyball|golf|tennis|swim(?:ming)?|surf contest|paddling|canoe|regatta|high school|prep sport|game recap|box score|tournament|playoff|state champ(?:ionship)?|prom|homecoming|graduation|grad night|little league|interscholastic)\b/i;
+    const mauiRe = /maui|lāhainā|lahaina|wailuku|kahului|kihei|hana|maui county/i;
 
-    let items = [];
+    const bySource = { "Civil Beat": [], "Maui Now": [] };
+
     await Promise.all(feeds.map(async feed => {
       try {
         const r = await fetch(proxy + encodeURIComponent(feed.url));
         const d = await r.json();
         (d.items || []).forEach(item => {
           const pub = new Date(item.pubDate).getTime();
-          if (pub >= cutoff && !skipRe.test(item.title))
-            items.push({ title: item.title, link: item.link, date: new Date(item.pubDate), source: feed.source });
+          const text = (item.title || "") + " " + (item.description || "");
+          if (pub >= cutoff && !skipRe.test(item.title)) {
+            if (!feed.filterMaui || mauiRe.test(text))
+              bySource[feed.source].push({ title: item.title, link: item.link, date: new Date(item.pubDate), source: feed.source });
+          }
         });
       } catch(e) {}
     }));
 
-    items.sort((a, b) => b.date - a.date);
-    items = items.slice(0, 6);
+    // Dedupe by link within each source
+    for (const src of Object.keys(bySource)) {
+      const seen = new Set();
+      bySource[src] = bySource[src].filter(i => seen.has(i.link) ? false : seen.add(i.link));
+      bySource[src].sort((a, b) => b.date - a.date);
+    }
+
+    // Interleave: up to 3 from each source, newest first within each
+    const cb = bySource["Civil Beat"].slice(0, 3);
+    const mn = bySource["Maui Now"].slice(0, 3);
+    let items = [];
+    const max = Math.max(cb.length, mn.length);
+    for (let i = 0; i < max; i++) {
+      if (cb[i]) items.push(cb[i]);
+      if (mn[i]) items.push(mn[i]);
+    }
 
     const container = document.getElementById("news-list");
     if (!items.length) {
