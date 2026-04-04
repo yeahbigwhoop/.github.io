@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Icebreaker Machine</title>
+  <link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=DM+Sans:wght@300;400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      width: 100%; height: 100%;
+      overflow: hidden;
+      background: #f5f1ea;
+    }
+
+    /* Full-bleed photo layer */
+    .art-wrap {
+      position: fixed;
+      inset: 0;
+      opacity: 0;
+      transition: opacity 1.2s ease;
+    }
+    .art-wrap.visible { opacity: 1; }
+    .art-wrap img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      object-position: center;
+      display: block;
+      filter: grayscale(100%);
+    }
+    /* Warm white veil — keeps text readable */
+    .art-wrap::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(245, 241, 234, 0.52);
+    }
+
+    /* UI overlay */
+    .ui {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      padding: 40px 48px 44px;
+      pointer-events: none;
+      mix-blend-mode: difference;
+    }
+
+    .title {
+      font-family: 'Special Elite', monospace;
+      font-size: 10px;
+      color: rgba(255,255,255,0.55);
+      letter-spacing: 0.32em;
+      text-transform: lowercase;
+      font-weight: normal;
+    }
+
+    .prompt-wrap {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      max-width: 540px;
+      width: 100%;
+    }
+
+    .prompt-text {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 18px;
+      font-weight: 300;
+      color: #fff;
+      text-align: center;
+      line-height: 1.75;
+      letter-spacing: -0.01em;
+      opacity: 0;
+      transition: opacity 1s ease 0.3s;
+      cursor: pointer;
+      pointer-events: all;
+    }
+    .prompt-text.visible { opacity: 1; }
+    .prompt-text:hover { opacity: 0.7; }
+
+    .copied-hint {
+      font-family: 'Inter', sans-serif;
+      font-size: 9px;
+      color: rgba(255,255,255,0.6);
+      letter-spacing: 0.14em;
+      margin-top: 14px;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+      pointer-events: none;
+    }
+    .copied-hint.show { opacity: 1; }
+
+    .bottom-row {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      pointer-events: all;
+    }
+
+    .btn {
+      font-family: 'Special Elite', monospace;
+      font-size: 10px;
+      color: rgba(255,255,255,0.55);
+      background: none;
+      border: none;
+      border-bottom: 1px solid rgba(255,255,255,0.3);
+      padding: 4px 0;
+      letter-spacing: 0.2em;
+      cursor: pointer;
+      text-transform: lowercase;
+      transition: color 0.3s, border-color 0.3s;
+    }
+    .btn:hover { color: #fff; border-color: rgba(255,255,255,0.7); }
+    .btn-ai { margin-left: 16px; border-bottom-style: dashed; }
+    .btn-ai:disabled { opacity: 0.5; cursor: default; }
+
+    .kbd-hint {
+      font-family: 'Inter', sans-serif;
+      font-size: 9px;
+      color: rgba(255,255,255,0.35);
+      letter-spacing: 0.14em;
+      font-weight: 300;
+      transition: opacity 1.5s ease;
+      user-select: none;
+    }
+    .kbd-hint.gone { opacity: 0; pointer-events: none; }
+  </style>
+</head>
+<body>
+
+  <div class="art-wrap" id="artWrap">
+    <img id="bgPhoto" src="" alt="" />
+  </div>
+
+  <div class="ui">
+    <h1 class="title">the icebreaker machine</h1>
+
+    <div class="prompt-wrap">
+      <div>
+        <div class="prompt-text" id="promptText" title="click to copy"></div>
+        <div class="copied-hint" id="copiedHint">copied</div>
+      </div>
+    </div>
+
+    <div class="bottom-row">
+      <button class="btn" onclick="generateIcebreaker()">generate icebreaker</button>
+      <button class="btn btn-ai" id="aiBtn" onclick="generateAIPrompt()">surprise me (ai)</button>
+      <span class="kbd-hint" id="kbdHint">or press space</span>
+    </div>
+  </div>
+
+  <script>
+    // ── Prompts ──────────────────────────────────────────────────────────────
+    const prompts = [
+      // — personal trivia —
+      "Fun fact no one knows about you?",
+      "What do you collect?",
+      "Origin story behind your name?",
+      "Person — living or dead — you'd have a drink with?",
+      "What's on your tombstone?",
+      "What are your phobias?",
+      "What was your go-to AIM / screen name?",
+      "What's your talent show talent?",
+      "Most unusual belief or conspiracy theory?",
+      "Have you ever had a supernatural experience?",
+      "If you had to change your first name, what would it be?",
+      "Any notable scars?",
+      "Silly childhood fear?",
+      "What's your most useless skill?",
+      "What's your pornstar name? (first pet + street you grew up on)",
+      "Do you have any superstitions or OCD habits?",
+      "What do you and your partner typically argue about most?",
+      "What's the poorest thing you've ever done?",
+      "What's something you believed as a kid that turned out to be wrong?",
+      "What's your most irrational strong opinion?",
+      "What's a word or phrase you overuse?",
+
+      // — current life snapshot —
+      "What's your cellphone wallpaper right now?",
+      "How many phone numbers do you have memorized?",
+      "What's the algorithm putting at the top of your feed?",
+      "What browser tabs do you have open right now?",
+      "What's at the top of your social media feed?",
+      "What do you have in your freezer right now?",
+      "What 3 apps do you use most on your phone?",
+      "What was your Spotify Wrapped song of the year?",
+      "What's in your most recently purchased Amazon list?",
+      "What's on your nightstand?",
+      "What's in your bedside drawer?",
+      "What's the oldest photo on your phone?",
+      "What's the last thing you searched for on YouTube at 2am?",
+      "What's the weirdest thing you've recently Googled?",
+      "What app could you absolutely not live without?",
+      "What's something you're currently procrastinating on?",
+
+      // — favorites & preferences —
+      "Favorite Thanksgiving dish?",
+      "Favorite sandwich?",
+      "Favorite fruit?",
+      "Favorite single fast food item?",
+      "Favorite hike?",
+      "Most recent item you treated yourself to?",
+      "Favorite restaurant right now?",
+      "Favorite Trader Joe's item right now?",
+      "Favorite gas station snack?",
+      "Favorite Christmas movie?",
+      "Favorite album ever?",
+      "Movie you've seen the most times?",
+      "Favorite snack food when you were little?",
+      "Favorite dish your mom or dad makes?",
+      "What's your Starbucks order?",
+      "Go-to diner order?",
+      "Best meal you've ever had?",
+      "Most unusual food you've ever eaten?",
+      "Strangest thing you've ever eaten?",
+      "What's your most controversial food take?",
+      "A food you could eat every day without getting tired of it?",
+      "What do you impulse-buy?",
+      "What's your go-to karaoke song?",
+      "Song you know every single word to?",
+      "A TV show you've rewatched more than twice?",
+      "What's your sign, and does it describe you?",
+
+      // — past & nostalgia —
+      "Who was your first best friend?",
+      "What's a childhood game or activity that defined your childhood?",
+      "What was on the wall of your childhood bedroom?",
+      "What would've gotten you into a stranger's van when you were young?",
+      "Who was your first celebrity crush?",
+      "First memorable gift you received?",
+      "First thing you ever collected?",
+      "What's your prom story — did you go, skip, or is it complicated?",
+      "Most dramatic thing you remember from high school?",
+      "Most rebellious thing you did as a teenager?",
+      "First concert?",
+      "First job?",
+      "Who taught you to drive?",
+
+      // — self-reflection —
+      "What's one thing about how you were raised you wish you could've changed?",
+      "What's one thing you appreciate about how you were raised?",
+      "What's something new you've tried lately?",
+      "What do you do to relax away from your phone?",
+      "What do you fear you'll start doing as you get older?",
+      "What's something you tend to notice that others don't?",
+      "Did you ever have a nemesis growing up?",
+      "What's a dead hobby of yours?",
+      "What's a rule your parents had that you wouldn't maintain?",
+      "What's something you're really bad at but want to improve?",
+      "What's something people assume about you that's wrong?",
+      "What skill did you give up on too early?",
+      "What's a dream you've almost given up on?",
+      "What's an opinion you've completely changed?",
+      "What's something you're irrationally proud of?",
+      "What's something you do when no one's watching?",
+      "What's something you're weirdly competitive about?",
+      "What's something you're saving for a special occasion that never comes?",
+      "What's something new you've learned about yourself in the last year?",
+      "What's your relationship with silence?",
+      "Describe your perfect Sunday morning.",
+      "What's a small thing that tells you a lot about a person?",
+      "What's something you carry with you everywhere?",
+
+      // — hypotheticals & fun —
+      "What Guinness record could you set?",
+      "You have $5 and you're hungry — what do you buy?",
+      "Best looking man and woman ever?",
+      "Whose filmography would you erase: Julia Roberts, Tom Hanks, Tom Cruise, or Meryl Streep?",
+      "What would your celebrity product be?",
+      "What would your green room requests be?",
+      "What would your reality TV show be called?",
+      "If your life had a theme song right now, what would it be?",
+      "What do you think you were in a past life?",
+      "What language would you want to be fluent in?",
+      "What would you do with an unexpected free day?",
+      "What's something people always ask you for advice on?",
+      "What's the most you've spent on a single meal?",
+
+      // — confessional & candid —
+      "What's your worst traffic infraction?",
+      "Describe your worst date.",
+      "What's your most embarrassing phase?",
+      "What's the worst advice you ever followed?",
+      "What's the last thing you lied about?",
+      "What's the most amount of money you've spent on something dumb?",
+      "What's an app you downloaded and never used?",
+      "What's something you've never told your parents?",
+      "What's the most awkward conversation you've ever had?",
+      "What's the longest you've gone without sleep?",
+      "What's the worst job you've ever had?",
+      "Any notable customer service experience (good or bad)?",
+      "What genuinely scares you?",
+      "What's a noise complaint you've made or received?",
+      "What's the most embarrassing thing in your search history?",
+
+      // — quirky details —
+      "What are your biggest pet peeves?",
+      "Juice or water? (Hawaiian Air style)",
+      "What's your Chex Mix recipe?",
+      "What's under your bed?",
+      "What YouTube or social media rabbit hole have you gone down recently?",
+      "What's a brand you've recently discovered that you love?",
+      "Most recent non-edible purchase under $20?",
+      "Cheapest thing you own that brings you disproportionate joy?",
+      "Most expensive thing you own that wasn't worth it?",
+      "What's something you own that no one else you know has?",
+      "What's something you keep meaning to learn but never do?",
+      "Describe your exercise routine.",
+      "One essential travel item?",
+      "Top 3 places on your travel wishlist?",
+      "Next planned or dream travel destination?",
+      "What's a most revisited place from your hometown?",
+      "Best thing about where you grew up?",
+      "What's a place you've never been but feel drawn to?",
+      "Who's a dream client of yours?",
+      "What's a small thing that makes your day significantly better?",
+      "What's a sound that instantly comforts you?",
+      "A sound that instantly annoys you?",
+      "What's a compliment you've received that you still think about?",
+      "Who was the last person to make you feel truly seen?",
+      "What's an inside joke you still laugh at?",
+      "What's the last thing that genuinely made you laugh out loud?",
+      "What's the last piece of art that moved you?",
+      "What's a word you love the sound of?",
+      "What word do you always misspell?",
+      "What's your most used emoji?",
+      "What's the oldest text thread you have?",
+      "What's your go-to excuse to leave a party?",
+      "What's the strangest dream you can remember?",
+      "What does your handwriting say about you?",
+      "What's something you do differently than everyone else you know?",
+      "What's a movie you thought you'd hate but loved?",
+      "What's your most controversial opinion about a popular movie?",
+      "What's a skill you have that surprises people?",
+      "What's a moment you wish you could relive?",
+      "What's something you keep meaning to do but never do?",
+      "What's the most you've ever paid for a haircut?",
+      "What's the worst haircut you've ever had?",
+      "What's something you own that's older than you?",
+    ];
+
+    // ── State ────────────────────────────────────────────────────────────────
+    let lastIndex = -1;
+    let hintDismissed = false;
+
+    function showPrompt(text, photoSeed) {
+      if (!hintDismissed) {
+        document.getElementById('kbdHint').classList.add('gone');
+        hintDismissed = true;
+      }
+
+      const textEl = document.getElementById('promptText');
+      const artWrap = document.getElementById('artWrap');
+      const bgPhoto = document.getElementById('bgPhoto');
+
+      artWrap.classList.remove('visible');
+      textEl.classList.remove('visible');
+
+      const img = new Image();
+      img.onload = () => {
+        bgPhoto.src = img.src;
+        textEl.textContent = text;
+        void artWrap.offsetHeight;
+        artWrap.classList.add('visible');
+        textEl.classList.add('visible');
+      };
+      img.onerror = () => {
+        textEl.textContent = text;
+        artWrap.classList.add('visible');
+        textEl.classList.add('visible');
+      };
+      img.src = `https://picsum.photos/seed/${photoSeed}/1600/900?grayscale`;
+    }
+
+    function generateIcebreaker() {
+      let index;
+      do { index = Math.floor(Math.random()*prompts.length); }
+      while (index === lastIndex && prompts.length > 1);
+      lastIndex = index;
+      showPrompt(prompts[index], index);
+    }
+
+    async function generateAIPrompt() {
+      const btn = document.getElementById('aiBtn');
+      btn.disabled = true;
+      btn.textContent = 'thinking...';
+      try {
+        const res = await fetch('/.netlify/functions/generate-prompt', { method: 'POST' });
+        if (!res.ok) throw new Error('api error');
+        const { prompt } = await res.json();
+        const photoSeed = 'ai-' + Date.now();
+        showPrompt(prompt, photoSeed);
+      } catch (e) {
+        generateIcebreaker();
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'surprise me (ai)';
+      }
+    }
+
+    // Copy to clipboard on prompt click
+    document.getElementById('promptText').addEventListener('click', () => {
+      const text = document.getElementById('promptText').textContent;
+      if (!text) return;
+      navigator.clipboard.writeText(text).then(() => {
+        const hint = document.getElementById('copiedHint');
+        hint.classList.add('show');
+        setTimeout(() => hint.classList.remove('show'), 1400);
+      });
+    });
+
+    // Spacebar shortcut
+    document.addEventListener('keydown', e => {
+      if (e.code === 'Space' && e.target.tagName !== 'BUTTON') {
+        e.preventDefault();
+        generateIcebreaker();
+      }
+    });
+  </script>
+</body>
+</html>
