@@ -50,13 +50,27 @@
       mix-blend-mode: difference;
     }
 
-    .title {
+    .title-wrap {
+      width: 100%;
+      overflow: hidden;
+    }
+    .title-track {
+      display: flex;
+      white-space: nowrap;
+      animation: marquee 35s linear infinite;
+    }
+    .title-track span {
       font-family: 'Special Elite', monospace;
       font-size: 10px;
       color: rgba(255,255,255,0.55);
       letter-spacing: 0.32em;
       text-transform: lowercase;
       font-weight: normal;
+      padding-right: 3.5em;
+    }
+    @keyframes marquee {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
     }
 
     .prompt-wrap {
@@ -140,7 +154,20 @@
   </div>
 
   <div class="ui">
-    <h1 class="title">the icebreaker machine</h1>
+    <div class="title-wrap">
+      <div class="title-track">
+        <span>the icebreaker machine</span>
+        <span>the icebreaker machine</span>
+        <span>the icebreaker machine</span>
+        <span>the icebreaker machine</span>
+        <span>the icebreaker machine</span>
+        <span>the icebreaker machine</span>
+        <span>the icebreaker machine</span>
+        <span>the icebreaker machine</span>
+        <span>the icebreaker machine</span>
+        <span>the icebreaker machine</span>
+      </div>
+    </div>
 
     <div class="prompt-wrap">
       <div>
